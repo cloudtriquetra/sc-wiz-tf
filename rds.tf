@@ -1,6 +1,6 @@
 resource "aws_db_parameter_group" "postgresql" {
   name        = "custom-postgresql-parameter-group"
-  family      = "postgres12"
+  family      = "postgres16"
   description = "Custom parameter group for PostgreSQL"
 
   parameter {
@@ -10,20 +10,21 @@ resource "aws_db_parameter_group" "postgresql" {
 }
 
 data "aws_kms_key" "rds" {
-  key_id = "alias/rds/test"
+  #key_id = "alias/rds/test"
+  key_id = "alias/aws/rds"
 }
 
 resource "aws_db_instance" "postgres" {
   allocated_storage    = 20
   engine               = "postgres"
-  engine_version       = "12.5"
-  instance_class       = "db.t2.micro"
+  instance_class       = "db.t3.medium"
   #name                 = "exampledb"
-  username             = "admin"
+  username             = "dbadmin"
   password             = "password"
   parameter_group_name = aws_db_parameter_group.postgresql.name
   skip_final_snapshot  = true
   kms_key_id = data.aws_kms_key.rds.arn
+  storage_encrypted = true
 
   tags = {
     Name = "example-postgres-instance"
